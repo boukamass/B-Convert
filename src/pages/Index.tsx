@@ -5,7 +5,7 @@ import { ProductSelector } from "@/components/ProductSelector";
 import { ConversionInput, UnitType } from "@/components/ConversionInput";
 import { ConversionResults } from "@/components/ConversionResults";
 import { Card } from "@/components/ui/card";
-import { Calculator } from "lucide-react";
+import { Calculator, Sparkles, Info } from "lucide-react";
 
 const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -50,23 +50,32 @@ const Index = () => {
   const results = calculateConversions();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 py-8 px-4">
-      <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-light/5 rounded-full blur-3xl animate-pulse-slow"></div>
+      </div>
+
+      <div className="relative max-w-4xl mx-auto py-12 px-4 space-y-8 animate-fade-in">
         {/* Header */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 bg-gradient-to-br from-primary to-primary-glow rounded-2xl shadow-lg">
-            <Calculator className="w-8 h-8 text-primary-foreground" />
+        <div className="text-center space-y-6">
+          <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary via-primary-light to-primary rounded-3xl shadow-2xl animate-glow">
+            <Calculator className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Brewery Product Converter
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Convert between bottles, crates, and hectoliters instantly
-          </p>
+          <div className="space-y-3">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent animate-scale-in">
+              Brewery Converter
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Instant conversions between bottles, crates, and hectoliters with precision
+            </p>
+          </div>
         </div>
 
         {/* Main Conversion Card */}
-        <Card className="p-6 bg-card/80 backdrop-blur-sm border-border shadow-xl space-y-6">
+        <Card className="p-8 glass-effect border-2 border-border/50 shadow-2xl space-y-8 rounded-3xl backdrop-blur-xl hover:border-primary/30 transition-all duration-500">
           <ProductSelector
             products={products}
             selectedProduct={selectedProduct}
@@ -74,19 +83,29 @@ const Index = () => {
           />
 
           {selectedProduct && (
-            <div className="p-4 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-sm text-muted-foreground space-y-1">
-                <div className="flex justify-between">
-                  <span>Bottles per crate:</span>
-                  <span className="font-medium text-foreground">
-                    {selectedProduct.bottlesPerCrate}
-                  </span>
+            <div className="p-6 bg-gradient-to-br from-primary/5 to-primary-light/5 rounded-2xl border-2 border-primary/20 animate-scale-in shadow-lg">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Info className="w-5 h-5 text-primary" />
                 </div>
-                <div className="flex justify-between">
-                  <span>Hectoliters per crate:</span>
-                  <span className="font-medium text-foreground">
-                    {selectedProduct.hectolitersPerCrate} hl
-                  </span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground mb-2 uppercase tracking-wide text-sm">
+                    Product Specifications
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
+                      <span className="text-muted-foreground">Bottles per crate</span>
+                      <span className="font-bold text-foreground text-base">
+                        {selectedProduct.bottlesPerCrate}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
+                      <span className="text-muted-foreground">Hectoliters per crate</span>
+                      <span className="font-bold text-foreground text-base">
+                        {selectedProduct.hectolitersPerCrate} hl
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,7 +119,7 @@ const Index = () => {
             disabled={!selectedProduct}
           />
 
-          {selectedProduct && inputValue && (
+          {selectedProduct && inputValue && parseFloat(inputValue) > 0 && (
             <div className="animate-scale-in">
               <ConversionResults
                 bottles={results.bottles}
@@ -109,11 +128,28 @@ const Index = () => {
               />
             </div>
           )}
+
+          {!selectedProduct && (
+            <div className="text-center py-12 space-y-3">
+              <div className="inline-flex p-4 bg-muted/50 rounded-2xl">
+                <Sparkles className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground">
+                Select a product to start converting
+              </p>
+            </div>
+          )}
         </Card>
 
-        {/* Info Footer */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>Select a product and enter a quantity to start converting</p>
+        {/* Footer Info */}
+        <div className="text-center space-y-2">
+          <p className="text-sm text-muted-foreground/80">
+            Real-time precision calculations for brewery inventory management
+          </p>
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+            <span>Powered by advanced conversion algorithms</span>
+          </div>
         </div>
       </div>
     </div>
