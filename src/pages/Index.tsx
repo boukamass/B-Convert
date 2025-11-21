@@ -125,6 +125,7 @@ const Index = () => {
                 bottles={results.bottles}
                 crates={results.crates}
                 hectoliters={results.hectoliters}
+                excludeUnit={inputUnit}
               />
             </div>
           )}

@@ -5,12 +5,14 @@ interface ConversionResultsProps {
   bottles: number;
   crates: number;
   hectoliters: number;
+  excludeUnit?: "bottles" | "crates" | "hectoliters";
 }
 
 export const ConversionResults = ({
   bottles,
   crates,
   hectoliters,
+  excludeUnit,
 }: ConversionResultsProps) => {
   const results = [
     {
@@ -54,7 +56,10 @@ export const ConversionResults = ({
         Conversion Results
       </label>
       <div className="grid gap-4">
-        {results.map((result, index) => {
+        {results.filter(result => {
+          const unitMap = { bottles: "bottles", crates: "crates", hectoliters: "hectoliters" };
+          return result.label.toLowerCase() !== excludeUnit;
+        }).map((result, index) => {
           const Icon = result.icon;
           return (
             <Card
