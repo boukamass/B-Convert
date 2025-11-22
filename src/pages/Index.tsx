@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Product } from "@/types/product";
 import { products } from "@/data/products";
 import { ProductSelector } from "@/components/ProductSelector";
@@ -44,7 +44,8 @@ const Index = () => {
     });
   };
 
-  const calculateConversions = () => {
+  // Memoize calculation results to prevent infinite re-renders
+  const results = useMemo(() => {
     if (!selectedProduct || !inputValue) {
       return { bottles: 0, crates: 0, hectoliters: 0 };
     }
@@ -52,11 +53,6 @@ const Index = () => {
     const value = parseFloat(inputValue);
     if (isNaN(value)) {
       return { bottles: 0, crates: 0, hectoliters: 0 };
-    }
-
-    // Save to history when valid conversion is made
-    if (value > 0 && selectedProduct) {
-      saveToHistory(selectedProduct.name, value, inputUnit);
     }
 
     let bottles = 0;
@@ -82,9 +78,17 @@ const Index = () => {
     }
 
     return { bottles, crates, hectoliters };
-  };
+  }, [selectedProduct, inputValue, inputUnit]);
 
-  const results = calculateConversions();
+  // Save to history when a valid conversion is completed
+  useEffect(() => {
+    if (selectedProduct && inputValue) {
+      const value = parseFloat(inputValue);
+      if (!isNaN(value) && value > 0) {
+        saveToHistory(selectedProduct.name, value, inputUnit);
+      }
+    }
+  }, [selectedProduct?.name, inputValue, inputUnit]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
