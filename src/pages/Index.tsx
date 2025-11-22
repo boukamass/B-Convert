@@ -44,6 +44,19 @@ const Index = () => {
     });
   };
 
+  const restoreFromHistory = (item: HistoryItem) => {
+    const product = products.find(p => p.name === item.productName);
+    if (product) {
+      setSelectedProduct(product);
+      setInputValue(item.value.toString());
+      setInputUnit(item.unit as UnitType);
+      toast({
+        title: "Conversion restored",
+        description: `Restored: ${item.value} ${item.unit} of ${item.productName}`,
+      });
+    }
+  };
+
   // Memoize calculation results to prevent infinite re-renders
   const results = useMemo(() => {
     if (!selectedProduct || !inputValue) {
@@ -183,7 +196,7 @@ const Index = () => {
           )}
         </Card>
 
-        <ConversionHistory history={history} onClear={clearHistory} />
+        <ConversionHistory history={history} onClear={clearHistory} onItemClick={restoreFromHistory} />
 
         {/* Footer Info */}
         <div className="text-center space-y-2">
