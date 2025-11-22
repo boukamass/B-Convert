@@ -13,9 +13,10 @@ export interface HistoryItem {
 interface ConversionHistoryProps {
   history: HistoryItem[];
   onClear: () => void;
+  onItemClick: (item: HistoryItem) => void;
 }
 
-export const ConversionHistory = ({ history, onClear }: ConversionHistoryProps) => {
+export const ConversionHistory = ({ history, onClear, onItemClick }: ConversionHistoryProps) => {
   if (history.length === 0) return null;
 
   const formatTimestamp = (timestamp: number) => {
@@ -49,21 +50,22 @@ export const ConversionHistory = ({ history, onClear }: ConversionHistoryProps) 
       
       <div className="space-y-2 max-h-64 overflow-y-auto">
         {history.map((item, index) => (
-          <div
+          <button
             key={item.id}
-            className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-br from-primary/5 to-primary-light/5 border border-primary/10 hover:border-primary/30 transition-all"
+            onClick={() => onItemClick(item)}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-br from-primary/5 to-primary-light/5 border border-primary/10 hover:border-primary/30 hover:bg-primary/10 transition-all cursor-pointer text-left group"
             style={{ animationDelay: `${index * 0.05}s` }}
           >
             <div className="flex-1">
-              <p className="font-semibold text-foreground">{item.productName}</p>
+              <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{item.productName}</p>
               <p className="text-sm text-muted-foreground">
                 {item.value} {item.unit}
               </p>
             </div>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
               {formatTimestamp(item.timestamp)}
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </Card>
