@@ -1,16 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product } from "@/types/product";
 import { products } from "@/data/products";
 import { ProductSelector } from "@/components/ProductSelector";
 import { ConversionInput, UnitType } from "@/components/ConversionInput";
 import { ConversionResults } from "@/components/ConversionResults";
+import { ConversionHistory, HistoryItem } from "@/components/ConversionHistory";
 import { Card } from "@/components/ui/card";
 import { Calculator, Sparkles, Info } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [inputUnit, setInputUnit] = useState<UnitType>("bottles");
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("conversionHistory");
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  const saveToHistory = (productName: string, value: number, unit: string) => {
+    const newItem: HistoryItem = {
+      id: Date.now().toString(),
+      productName,
+      value,
+      unit,
+      timestamp: Date.now(),
+    };
+    const updatedHistory = [newItem, ...history].slice(0, 10);
+    setHistory(updatedHistory);
+    localStorage.setItem("conversionHistory", JSON.stringify(updatedHistory));
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem("conversionHistory");
+    toast({
+      title: "History cleared",
+      description: "Conversion history has been cleared.",
+    });
+  };
 
   const calculateConversions = () => {
     if (!selectedProduct || !inputValue) {
@@ -20,6 +52,11 @@ const Index = () => {
     const value = parseFloat(inputValue);
     if (isNaN(value)) {
       return { bottles: 0, crates: 0, hectoliters: 0 };
+    }
+
+    // Save to history when valid conversion is made
+    if (value > 0 && selectedProduct) {
+      saveToHistory(selectedProduct.name, value, inputUnit);
     }
 
     let bottles = 0;
@@ -141,6 +178,8 @@ const Index = () => {
             </div>
           )}
         </Card>
+
+        <ConversionHistory history={history} onClear={clearHistory} />
 
         {/* Footer Info */}
         <div className="text-center space-y-2">

@@ -6,7 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, ArrowRightLeft } from "lucide-react";
 
 export type UnitType = "bottles" | "crates" | "hectoliters";
 
@@ -25,6 +26,13 @@ export const ConversionInput = ({
   onUnitChange,
   disabled,
 }: ConversionInputProps) => {
+  const handleSwapUnit = () => {
+    const units: UnitType[] = ["bottles", "crates", "hectoliters"];
+    const currentIndex = units.indexOf(unit);
+    const nextIndex = (currentIndex + 1) % units.length;
+    onUnitChange(units[nextIndex]);
+  };
+
   return (
     <div className="space-y-3 group">
       <label className="text-sm font-semibold text-foreground flex items-center gap-2 uppercase tracking-wider">
@@ -65,6 +73,15 @@ export const ConversionInput = ({
             </SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          onClick={handleSwapUnit}
+          disabled={disabled}
+          size="icon"
+          className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary-light hover:scale-105 transition-transform shadow-sm hover:shadow-md"
+          title="Swap unit"
+        >
+          <ArrowRightLeft className="h-5 w-5" />
+        </Button>
       </div>
     </div>
   );
