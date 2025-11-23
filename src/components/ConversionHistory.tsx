@@ -24,10 +24,10 @@ export const ConversionHistory = ({ history, onClear, onItemClick }: ConversionH
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / 60000);
     
-    if (diffInMinutes < 1) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-    return date.toLocaleDateString();
+    if (diffInMinutes < 1) return "À l'instant";
+    if (diffInMinutes < 60) return `Il y a ${diffInMinutes}min`;
+    if (diffInMinutes < 1440) return `Il y a ${Math.floor(diffInMinutes / 60)}h`;
+    return date.toLocaleDateString('fr-FR');
   };
 
   return (
@@ -35,7 +35,7 @@ export const ConversionHistory = ({ history, onClear, onItemClick }: ConversionH
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold text-foreground">Recent Conversions</h3>
+          <h3 className="text-lg font-semibold text-foreground">Conversions récentes</h3>
         </div>
         <Button
           onClick={onClear}
@@ -44,7 +44,7 @@ export const ConversionHistory = ({ history, onClear, onItemClick }: ConversionH
           className="hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-4 w-4 mr-2" />
-          Clear
+          Effacer
         </Button>
       </div>
       
