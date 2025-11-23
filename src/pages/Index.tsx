@@ -120,7 +120,7 @@ const Index = () => {
           </div>
           <div className="space-y-3">
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent animate-scale-in">
-              Brewery Converter
+              B-Convert
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Instant conversions between bottles, crates, and hectoliters with precision
