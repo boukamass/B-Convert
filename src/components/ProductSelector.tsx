@@ -25,7 +25,7 @@ export const ProductSelector = ({
         <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-light">
           <Beer className="w-4 h-4 text-white" />
         </div>
-        Select Your Product
+        Sélectionnez votre produit
       </label>
       <Select
         value={selectedProduct?.id}
@@ -35,7 +35,7 @@ export const ProductSelector = ({
         }}
       >
         <SelectTrigger className="w-full h-14 bg-card border-2 border-border hover:border-primary transition-all duration-300 rounded-2xl shadow-sm hover:shadow-md group-hover:scale-[1.01] text-base font-medium">
-          <SelectValue placeholder="Choose a product..." />
+          <SelectValue placeholder="Choisissez un produit..." />
         </SelectTrigger>
         <SelectContent className="bg-popover border-2 border-border rounded-2xl shadow-xl backdrop-blur-xl">
           {products.map((product) => (

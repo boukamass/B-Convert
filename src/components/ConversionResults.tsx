@@ -17,9 +17,9 @@ export const ConversionResults = ({
   const results = [
     {
       icon: Package,
-      label: "Bottles",
+      label: "Bouteilles",
       value: bottles.toFixed(2),
-      unit: "bottles",
+      unit: "bouteilles",
       color: "from-primary/20 to-primary/5",
       borderColor: "border-primary/30",
       iconBg: "bg-primary/10",
@@ -27,9 +27,9 @@ export const ConversionResults = ({
     },
     {
       icon: Container,
-      label: "Crates",
+      label: "Casiers",
       value: crates.toFixed(2),
-      unit: "crates",
+      unit: "casiers",
       color: "from-accent/20 to-accent/5",
       borderColor: "border-accent/30",
       iconBg: "bg-accent/10",
@@ -37,7 +37,7 @@ export const ConversionResults = ({
     },
     {
       icon: Droplets,
-      label: "Hectoliters",
+      label: "Hectolitres",
       value: hectoliters.toFixed(4),
       unit: "hl",
       color: "from-primary-light/20 to-primary-light/5",
@@ -53,7 +53,7 @@ export const ConversionResults = ({
         <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary to-primary-light">
           <TrendingUp className="w-4 h-4 text-white" />
         </div>
-        Conversion Results
+        Résultats de conversion
       </label>
       <div className="grid gap-4">
         {results.filter(result => {

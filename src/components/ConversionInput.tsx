@@ -39,7 +39,7 @@ export const ConversionInput = ({
         <div className="p-1.5 rounded-lg bg-gradient-to-br from-accent to-accent/80">
           <ArrowRight className="w-4 h-4 text-white" />
         </div>
-        Convert From
+        Convertir depuis
       </label>
       <div className="flex gap-3">
         <div className="flex-1 relative group/input">
@@ -63,13 +63,13 @@ export const ConversionInput = ({
           </SelectTrigger>
           <SelectContent className="bg-popover border-2 border-border rounded-2xl shadow-xl backdrop-blur-xl">
             <SelectItem value="bottles" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-              <span className="font-medium">Bottles</span>
+              <span className="font-medium">Bouteilles</span>
             </SelectItem>
             <SelectItem value="crates" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-              <span className="font-medium">Crates</span>
+              <span className="font-medium">Casiers</span>
             </SelectItem>
             <SelectItem value="hectoliters" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-              <span className="font-medium">Hectoliters (hl)</span>
+              <span className="font-medium">Hectolitres (hl)</span>
             </SelectItem>
           </SelectContent>
         </Select>
@@ -78,7 +78,7 @@ export const ConversionInput = ({
           disabled={disabled}
           size="icon"
           className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary-light hover:scale-105 transition-transform shadow-sm hover:shadow-md"
-          title="Swap unit"
+          title="Changer d'unité"
         >
           <ArrowRightLeft className="h-5 w-5" />
         </Button>

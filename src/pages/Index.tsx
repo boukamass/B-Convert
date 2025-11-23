@@ -8,6 +8,7 @@ import { ConversionHistory, HistoryItem } from "@/components/ConversionHistory";
 import { Card } from "@/components/ui/card";
 import { Calculator, Sparkles, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import brascoLogo from "@/assets/brasco-logo.png";
 
 const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -39,8 +40,8 @@ const Index = () => {
     setHistory([]);
     localStorage.removeItem("conversionHistory");
     toast({
-      title: "History cleared",
-      description: "Conversion history has been cleared.",
+      title: "Historique effacé",
+      description: "L'historique des conversions a été effacé.",
     });
   };
 
@@ -51,8 +52,8 @@ const Index = () => {
       setInputValue(item.value.toString());
       setInputUnit(item.unit as UnitType);
       toast({
-        title: "Conversion restored",
-        description: `Restored: ${item.value} ${item.unit} of ${item.productName}`,
+        title: "Conversion restaurée",
+        description: `Restauré: ${item.value} ${item.unit} de ${item.productName}`,
       });
     }
   };
@@ -115,16 +116,20 @@ const Index = () => {
       <div className="relative max-w-4xl mx-auto py-12 px-4 space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-6">
-          <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary via-primary-light to-primary rounded-3xl shadow-2xl animate-glow">
-            <Calculator className="w-10 h-10 text-white" />
-          </div>
-          <div className="space-y-3">
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent animate-scale-in">
-              B-Convert
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Instant conversions between bottles, crates, and hectoliters with precision
-            </p>
+          <div className="flex flex-col items-center gap-6">
+            <img 
+              src={brascoLogo} 
+              alt="Brasco Logo" 
+              className="h-24 w-auto object-contain animate-scale-in"
+            />
+            <div className="space-y-3">
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent animate-scale-in">
+                B-Convert
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Conversions instantanées entre bouteilles, casiers et hectolitres avec précision
+              </p>
+            </div>
           </div>
         </div>
 
@@ -144,17 +149,17 @@ const Index = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground mb-2 uppercase tracking-wide text-sm">
-                    Product Specifications
+                    Spécifications du produit
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
-                      <span className="text-muted-foreground">Bottles per crate</span>
+                      <span className="text-muted-foreground">Bouteilles par casier</span>
                       <span className="font-bold text-foreground text-base">
                         {selectedProduct.bottlesPerCrate}
                       </span>
                     </div>
                     <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
-                      <span className="text-muted-foreground">Hectoliters per crate</span>
+                      <span className="text-muted-foreground">Hectolitres par casier</span>
                       <span className="font-bold text-foreground text-base">
                         {selectedProduct.hectolitersPerCrate} hl
                       </span>
@@ -190,7 +195,7 @@ const Index = () => {
                 <Sparkles className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground">
-                Select a product to start converting
+                Sélectionnez un produit pour commencer la conversion
               </p>
             </div>
           )}
@@ -199,14 +204,17 @@ const Index = () => {
         <ConversionHistory history={history} onClear={clearHistory} onItemClick={restoreFromHistory} />
 
         {/* Footer Info */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground/80">
-            Real-time precision calculations for brewery inventory management
+            Calculs de précision en temps réel pour la gestion des inventaires brassicoles
           </p>
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span>Powered by advanced conversion algorithms</span>
+            <span>Propulsé par des algorithmes de conversion avancés</span>
           </div>
+          <p className="text-xs text-muted-foreground/50 pt-2">
+            Développé par Bienvenu Sedin Massamba © {new Date().getFullYear()}
+          </p>
         </div>
       </div>
     </div>
