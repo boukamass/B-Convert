@@ -1,12 +1,12 @@
 {
   "appId": "f95ea74b-a9a2-4f0e-8e8a-c3f2abe4ed06",
   "appDisplayName": "B-Convert",
-  "description": "Conversions instantanées entre bouteilles, casiers et hectolitres avec précision pour les brasseries du congo (Brasco)",
+  "description": "Conversions instantanées entre bouteilles, casiers et hectolitres avec précision pour les brasseries du Congo (Brasco)",
   "environmentId": "c6930d45-680d-e021-87d3-04f80be95a52",
   "buildPath": "./dist",
   "buildEntryPoint": "index.html",
-  "logoPath": "./src/assets/logo.png",
-  "localAppUrl": "http://localhost:3000/",
+  "logoPath": "./src/assets/brasco-logo.png",
+  "localAppUrl": "http://localhost:5173/",
   "connectionReferences": {},
   "databaseReferences": {}
 }
