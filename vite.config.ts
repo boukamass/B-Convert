@@ -16,26 +16,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    lib: mode === "production" ? {
-      entry: path.resolve(__dirname, "src/index.ts"),
-      name: "BConvert",
-      fileName: () => "bundle.js",
-      formats: ["es"],
-    } : undefined,
-    rollupOptions: mode === "production" ? {
-      external: ["react", "react-dom"],
-      output: {
-        globals: {
-          react: "React",
-          "react-dom": "ReactDOM",
-        },
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name === "style.css") return "style.css";
-          return assetInfo.name || "";
-        },
-      },
-    } : {},
     chunkSizeWarningLimit: 2000,
-    outDir: mode === "production" ? "out" : "dist",
   },
 }));

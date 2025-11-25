@@ -1,12 +1,12 @@
-# B-Convert - Application de Conversion pour Brasseries
+# B-Convert - Application de Conversion pour Brasseries (Power Apps Code App)
 
-Application Power Apps pour conversions instantanées entre bouteilles, casiers et hectolitres.
+Application Power Apps Code App pour conversions instantanées entre bouteilles, casiers et hectolitres.
 
 ![Brasco Logo](./src/assets/brasco-logo.png)
 
 ## 🎯 Vue d'Ensemble
 
-B-Convert est une application web moderne développée pour les Brasseries du Congo (Brasco), permettant des conversions précises et instantanées entre différentes unités de mesure utilisées dans l'industrie brassicole.
+B-Convert est une application web moderne développée pour les Brasseries du Congo (Brasco), permettant des conversions précises et instantanées entre différentes unités de mesure utilisées dans l'industrie brassicole. L'application est construite comme une **Power Apps Code App** utilisant React, TypeScript et le SDK officiel `@microsoft/power-apps`.
 
 ## 🚀 Démarrage Rapide
 
@@ -22,11 +22,10 @@ npm install
 
 # Démarrer le serveur de développement
 npm run dev
+# → http://localhost:8080
 ```
 
-### Installation pour Power Apps
-
-Consultez le [Guide de Déploiement Power Apps](./README_POWERAPPS.md) pour les instructions complètes de déploiement vers Microsoft Power Apps.
+### Déploiement vers Power Apps
 
 ```bash
 # Installation PAC CLI
@@ -39,6 +38,11 @@ pac auth create --environment <votre-environment-id>
 npm run build
 pac code push
 ```
+
+📖 **Guides Complets**:
+- [Quick Start Guide (EN)](./CODE_APPS_QUICKSTART.md) - Guide de démarrage rapide
+- [Compliance Review (EN)](./CODE_APPS_COMPLIANCE.md) - Revue de conformité et architecture
+- [Déploiement Power Apps (FR)](./POWERAPPS_DEPLOYMENT.md) - Guide détaillé de déploiement
 
 ## 📋 Fonctionnalités
 

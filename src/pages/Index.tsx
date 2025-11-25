@@ -9,13 +9,8 @@ import { Card } from "@/components/ui/card";
 import { Calculator, Sparkles, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import brascoLogo from "@/assets/brasco-logo.png";
-import { PCFAppProps } from "@/types/pcf";
 
-interface IndexProps {
-  pcfProps?: PCFAppProps;
-}
-
-const Index = ({ pcfProps }: IndexProps) => {
+const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [inputUnit, setInputUnit] = useState<UnitType>("bottles");
