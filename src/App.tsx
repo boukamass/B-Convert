@@ -3,46 +3,28 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PowerProvider } from "@/lib/PowerProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { PCFAppProps } from "./types/pcf";
 
 const queryClient = new QueryClient();
 
-/**
- * Main App component - can be used standalone or within PCF component
- * When used in PCF, receives context and callbacks through props
- */
-const App = (props?: PCFAppProps) => {
-  // Log PCF context if available (for debugging)
-  if (props?.context) {
-    console.log("[App] Running in PCF mode with context:", props.context);
-  } else {
-    console.log("[App] Running in standalone mode (development)");
-  }
-
-  return (
-    <QueryClientProvider client={queryClient}>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <PowerProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route 
-              path="/" 
-              element={
-                <Index 
-                  pcfProps={props} 
-                />
-              } 
-            />
+            <Route path="/" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
-  );
-};
+    </PowerProvider>
+  </QueryClientProvider>
+);
 
 export default App;
