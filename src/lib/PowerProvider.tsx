@@ -1,66 +1,57 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { initialize } from '@microsoft/power-apps/app';
 
 interface PowerContextType {
-  isReady: boolean;
-  isPowerApps: boolean;
-  powerApp: any | null;
+ isReady: boolean;
+ isPowerApps: boolean;
 }
 
 const PowerContext = createContext<PowerContextType>({
-  isReady: false,
-  isPowerApps: false,
-  powerApp: null,
+ isReady: false,
+ isPowerApps: false,
 });
 
 export const usePower = () => useContext(PowerContext);
 
 interface PowerProviderProps {
-  children: ReactNode;
+ children: ReactNode;
 }
 
 /**
- * PowerProvider for Power Apps Code Apps
- * Uses the official @microsoft/power-apps SDK
- * 
- * Reference: https://learn.microsoft.com/en-us/power-apps/developer/code-apps/
- */
+* PowerProvider for Power Apps Code Apps
+* Handles non-blocking SDK initialization and provides status via context.
+*/
 export const PowerProvider = ({ children }: PowerProviderProps) => {
-  const [isReady, setIsReady] = useState(false);
-  const [isPowerApps, setIsPowerApps] = useState(false);
-  const [powerApp, setPowerApp] = useState<any>(null);
+ const [isReady, setIsReady] = useState(false);
+ const [isPowerApps, setIsPowerApps] = useState(false);
 
-  useEffect(() => {
-    const initializePowerApp = async () => {
-      try {
-        console.log('[PowerProvider] Attempting to initialize Power Apps SDK...');
-        
-        // Initialize Power Apps using the official SDK
-        // Note: initialize() is called for its side effects, not return value
-        await initialize();
-        
-        console.log('[PowerProvider] Power Apps SDK initialized successfully');
-        setIsPowerApps(true);
-        setPowerApp(true); // SDK initialized
-      } catch (error) {
-        // Not running in Power Apps environment (e.g., local development)
-        console.log('[PowerProvider] Not running in Power Apps environment:', error);
-        setIsPowerApps(false);
-        setPowerApp(null);
-      } finally {
-        // Always set ready to allow app to render
-        setIsReady(true);
-      }
-    };
+ useEffect(() => {
+  const initializePowerApp = async () => {
+   try {
+    console.log('[PowerProvider] Attempting to initialize Power Apps SDK...');
+    
+    await initialize();
+    
+    console.log('[PowerProvider] Power Apps SDK initialized successfully');
+    // This flag confirms we are running inside the Power Apps host
+    setIsPowerApps(true);
+   } catch (error) {
+    console.error('[PowerProvider] Not running in Power Apps environment or initialization failed:', error);
+    // This flag confirms we are NOT running inside the Power Apps host
+    setIsPowerApps(false);
+   } finally {
+    // CRITICAL: Always set ready to true to allow the app to render (non-blocking)
+    setIsReady(true);
+   }
+  };
 
-    initializePowerApp();
-  }, []);
+  initializePowerApp();
+ }, []);
 
-  // Non-blocking: render children immediately without loading spinner
-  // This ensures fast initial render in both dev and production
-  return (
-    <PowerContext.Provider value={{ isReady, isPowerApps, powerApp }}>
-      {children}
-    </PowerContext.Provider>
-  );
+ // Non-blocking render, adhering to fast initial load guideline
+ return (
+  <PowerContext.Provider value={{ isReady, isPowerApps }}>
+   {children}
+  </PowerContext.Provider>
+ );
 };

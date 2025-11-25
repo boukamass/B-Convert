@@ -1,5 +1,5 @@
 {
-  "appId": "f95ea74b-a9a2-4f0e-8e8a-c3f2abe4ed06",
+  "appId": "7d5e4be5-0035-4b6a-a14d-86a01507a04b",
   "appDisplayName": "B-Convert",
   "description": "Conversions instantanées entre bouteilles, casiers et hectolitres avec précision pour les brasseries du Congo (Brasco)",
   "environmentId": "c6930d45-680d-e021-87d3-04f80be95a52",
@@ -8,5 +8,20 @@
   "logoPath": "./src/assets/brasco-logo.png",
   "localAppUrl": "http://localhost:5173/",
   "connectionReferences": {},
-  "databaseReferences": {}
+  "databaseReferences": {
+    "default.cds": {
+      "state": "Configured",
+      "instanceUrl": "https://org58d281ba.crm4.dynamics.com/",
+      "webApiVersion": "v9.0",
+      "dataSources": {
+        "produits": {
+          "entitySetName": "mbs_produits",
+          "logicalName": "mbs_produit",
+          "isHidden": false
+        }
+      },
+      "version": "v9.0",
+      "environmentVariableName": ""
+    }
+  }
 }
