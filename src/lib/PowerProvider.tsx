@@ -9,10 +9,12 @@ export default function PowerProvider({ children }: PowerProviderProps) {
     useEffect(() => {
         const initApp = async () => {
             try {
+                console.log('[PowerProvider] Initializing Power Apps SDK...');
                 await initialize();
-                console.log('Power Platform SDK initialized successfully');
+                console.log('[PowerProvider] Power Apps SDK initialized successfully');
             } catch (error) {
-                console.error('Failed to initialize Power Platform SDK:', error);
+                console.error('[PowerProvider] Failed to initialize Power Apps SDK:', error);
+                console.log('[PowerProvider] App will continue in standalone mode');
             }
         };
 

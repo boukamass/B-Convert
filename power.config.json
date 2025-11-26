@@ -6,7 +6,7 @@
   "buildPath": "./dist",
   "buildEntryPoint": "index.html",
   "logoPath": "./src/assets/brasco-logo.png",
-  "localAppUrl": "http://localhost:5173/",
+  "localAppUrl": "http://localhost:8080/",
   "connectionReferences": {},
   "databaseReferences": {
     "default.cds": {

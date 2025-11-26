@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   base: "./",
   server: {
     host: "::",
-    port: 3000,
+    port: 8080,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
@@ -18,5 +18,12 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+    assetsDir: 'assets',
+    sourcemap: false,
   },
 }));

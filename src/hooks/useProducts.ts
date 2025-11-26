@@ -8,9 +8,9 @@ import type { Product } from "@/types/product";
 export function useProducts() {
  const [products, setProducts] = useState<Product[]>([]);
  const [loading, setLoading] = useState(true);
+ const [error, setError] = useState<string | null>(null);
 
  useEffect(() => {
-  // FIX: Define options without 'as const' to make the 'select' array a mutable string[]
   const options = { 
    select: ['mbs_produitid', 'mbs_name', 'mbs_quantityperuom','mbs_unitvolumehl'],
    top: 50
@@ -18,12 +18,21 @@ export function useProducts() {
 
   async function load() {
    try {
-    // Pass the corrected 'options' object to the service call
+    console.log('[useProducts] Starting to fetch products from Dataverse...');
     const response = await Mbs_produitsService.getAll(options);
     
-    const items: Mbs_produits[] = (response.data) || [];
-    console.log("Dataverse response data:", response.data);
-    console.log("Number of items fetched:", items.length);
+    console.log('[useProducts] Raw response:', response);
+    
+    if (!response || !response.data) {
+     throw new Error('No data received from Dataverse');
+    }
+
+    const items: Mbs_produits[] = response.data || [];
+    console.log('[useProducts] Number of items fetched:', items.length);
+
+    if (items.length === 0) {
+     console.warn('[useProducts] No products found in Dataverse table mbs_produits');
+    }
 
     const mapped: Product[] = items.map((item) => ({
      id: item.mbs_produitid ?? "",
@@ -32,9 +41,13 @@ export function useProducts() {
      hectolitersPerCrate: Number(item.mbs_unitvolumehl ?? 0),
     }));
 
+    console.log('[useProducts] Mapped products:', mapped);
     setProducts(mapped);
-   } catch (error) {
-    console.error("Failed to load products from Dataverse:", error);
+    setError(null);
+   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[useProducts] Failed to load products:', err);
+    setError(`Erreur de chargement: ${errorMessage}`);
    } finally {
     setLoading(false);
    }
@@ -43,5 +56,5 @@ export function useProducts() {
   load();
  }, []); 
 
- return { products, loading };
+ return { products, loading, error };
 }
