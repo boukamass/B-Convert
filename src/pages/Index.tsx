@@ -11,7 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import brascoLogo from "@/assets/brasco-logo.png";
 
 const Index = () => {
-  const { products, loading } = useProducts();
+  const { products, loading, error } = useProducts();
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
@@ -128,7 +128,31 @@ const Index = () => {
         {/* Main Conversion Card */}
         <Card className="p-8 glass-effect border-2 border-border/50 shadow-2xl space-y-8 rounded-3xl backdrop-blur-xl hover:border-primary/30 transition-all duration-500">
           {loading ? (
-            <p>Chargement des produits…</p>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-muted-foreground">Chargement des produits depuis Dataverse…</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="p-4 bg-destructive/10 rounded-2xl">
+                <Info className="w-12 h-12 text-destructive" />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-destructive font-semibold">Erreur de connexion</p>
+                <p className="text-sm text-muted-foreground max-w-md">{error}</p>
+                <p className="text-xs text-muted-foreground">Vérifiez votre connexion Dataverse et les permissions sur la table mbs_produits</p>
+              </div>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="p-4 bg-muted/50 rounded-2xl">
+                <Info className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="font-semibold text-foreground">Aucun produit trouvé</p>
+                <p className="text-sm text-muted-foreground">La table mbs_produits est vide. Ajoutez des produits dans Dataverse.</p>
+              </div>
+            </div>
           ) : (
             <ProductSelector
               products={products}
