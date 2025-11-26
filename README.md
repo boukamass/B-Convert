@@ -1,241 +1,299 @@
-# B-Convert - Application de Conversion pour Brasseries (Power Apps Code App)
+# B-Convert 🍺 - Application Power Apps Code App
 
-Application Power Apps Code App pour conversions instantanées entre bouteilles, casiers et hectolitres.
+Application de conversion professionnelle pour les Brasseries du Congo (Brasco), construite en suivant **exactement** le pattern officiel **Microsoft PowerAppsCodeApps/HelloWorld**.
 
 ![Brasco Logo](./src/assets/brasco-logo.png)
 
-## 🎯 Vue d'Ensemble
+## 🎯 Fonctionnalités
 
-B-Convert est une application web moderne développée pour les Brasseries du Congo (Brasco), permettant des conversions précises et instantanées entre différentes unités de mesure utilisées dans l'industrie brassicole. L'application est construite comme une **Power Apps Code App** utilisant React, TypeScript et le SDK officiel `@microsoft/power-apps`.
+- ✅ **Conversion instantanée** entre bouteilles, casiers et hectolitres
+- ✅ **Connexion Dataverse** pour charger les produits dynamiquement depuis `mbs_produits`
+- ✅ **Historique local** des 10 dernières conversions
+- ✅ **Interface responsive** optimisée mobile et desktop
+- ✅ **Design moderne** avec animations fluides
+- ✅ **Calculs précis** basés sur les données produits réelles
+
+## 🏗️ Architecture (Pattern HelloWorld)
+
+Cette application est construite en suivant le **pattern officiel Microsoft PowerAppsCodeApps/HelloWorld**.
+
+### PowerProvider Minimal
+
+```typescript
+// src/lib/PowerProvider.tsx - Pattern HelloWorld officiel
+export default function PowerProvider({ children }: PowerProviderProps) {
+    useEffect(() => {
+        const initApp = async () => {
+            try {
+                await initialize(); // @microsoft/power-apps/app
+                console.log('Power Platform SDK initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Power Platform SDK:', error);
+            }
+        };
+        initApp();
+    }, []);
+    return <>{children}</>;
+}
+```
+
+**Caractéristiques clés:**
+- ✅ Pas de Context API (simplifié)
+- ✅ Pas de state management complexe
+- ✅ Initialisation non-bloquante
+- ✅ Fallback gracieux pour dev local
+
+### Structure du Projet
+
+```
+src/
+├── main.tsx                    # Point d'entrée avec StrictMode + PowerProvider
+├── App.tsx                     # App principale avec routing
+├── lib/
+│   └── PowerProvider.tsx       # Pattern HelloWorld minimal
+├── hooks/
+│   └── useProducts.ts          # Hook pour charger depuis Dataverse
+├── components/
+│   ├── ProductSelector.tsx     # Sélecteur de produits
+│   ├── ConversionInput.tsx     # Champ de saisie + unité
+│   ├── ConversionResults.tsx   # Résultats calculés
+│   └── ConversionHistory.tsx   # Historique des conversions
+├── generated/
+│   ├── services/
+│   │   └── Mbs_produitsService.ts  # Service Dataverse auto-généré
+│   └── models/
+│       └── Mbs_produitsModel.ts    # Modèles Dataverse
+└── pages/
+    └── Index.tsx               # Page principale
+```
 
 ## 🚀 Démarrage Rapide
 
-### Installation Standard
+### Prérequis
+
+- **Node.js 18+** et npm
+- **PAC CLI** ([Guide d'installation](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction))
+- Accès à un **environnement Power Apps**
+
+### Installation (< 5 minutes)
 
 ```bash
-# Cloner le projet
-git clone <YOUR_GIT_URL>
-cd <YOUR_PROJECT_NAME>
-
-# Installer les dépendances
+# 1. Installer les dépendances
 npm install
 
-# Démarrer le serveur de développement
-npm run dev
-# → http://localhost:8080
+# 2. Authentifier PAC CLI avec votre environnement
+pac auth create --environment {VOTRE_ENVIRONMENT_ID}
+
+# 3. Initialiser Power Apps (une seule fois)
+pac code init
 ```
 
-### Déploiement vers Power Apps
+### Développement Local
 
 ```bash
-# Installation PAC CLI
-npm install -g @microsoft/powerplatform-cli
+# Démarrer Vite + PAC concurrent (recommandé)
+npm run dev
+# → http://localhost:3000
 
-# Authentification
-pac auth create --environment <votre-environment-id>
+# OU séparément:
+npm run dev:vite    # Vite seul (port 3000)
+npm run dev:pac     # PAC harness seul
+```
 
-# Build et déploiement
+### Build & Déploiement
+
+```bash
+# 1. Builder pour production
+npm run build
+
+# 2. Déployer vers Power Apps
+pac code push
+```
+
+✅ **Succès!** La commande retourne une URL Power Apps pour lancer l'app.
+
+Accéder à l'app: [https://make.powerapps.com](https://make.powerapps.com) → Sélectionner environnement → Trouver "B-Convert"
+
+## 🔌 Connexion Dataverse
+
+L'application charge dynamiquement les produits depuis la table **`mbs_produits`** dans Dataverse.
+
+### Configuration (power.config.json)
+
+```json
+{
+  "appId": "7d5e4be5-0035-4b6a-a14d-86a01507a04b",
+  "appDisplayName": "B-Convert",
+  "environmentId": "c6930d45-680d-e021-87d3-04f80be95a52",
+  "databaseReferences": {
+    "default.cds": {
+      "instanceUrl": "https://org58d281ba.crm4.dynamics.com/",
+      "dataSources": {
+        "produits": {
+          "entitySetName": "mbs_produits",
+          "logicalName": "mbs_produit"
+        }
+      }
+    }
+  }
+}
+```
+
+### Champs Dataverse Utilisés
+
+| Champ | Type | Utilisation |
+|-------|------|-------------|
+| `mbs_produitid` | GUID | ID unique du produit |
+| `mbs_name` | String | Nom du produit affiché |
+| `mbs_quantityperuom` | Number | Nombre de bouteilles par casier |
+| `mbs_unitvolumehl` | Number | Hectolitres par casier |
+
+### Hook useProducts
+
+```typescript
+// src/hooks/useProducts.ts
+export function useProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const response = await Mbs_produitsService.getAll({
+        select: ['mbs_produitid', 'mbs_name', 'mbs_quantityperuom', 'mbs_unitvolumehl'],
+        top: 50
+      });
+      // Map vers format Product
+      setProducts(mapped);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  return { products, loading };
+}
+```
+
+## 💡 Utilisation
+
+1. **Sélectionner un produit** dans la liste déroulante (chargée depuis Dataverse)
+2. **Saisir une quantité** et choisir l'unité (Bouteilles, Casiers, ou Hectolitres)
+3. **Voir les résultats** calculés instantanément
+4. **Historique sauvegardé** automatiquement (localStorage)
+5. **Restaurer** une conversion en cliquant sur l'historique
+
+### Exemple
+
+```
+Produit sélectionné: Primus 33cl
+- 24 bouteilles par casier
+- 0.08 hl par casier
+
+Saisie: 100 bouteilles
+
+Résultats:
+→ Casiers: 4.17
+→ Hectolitres: 0.33 hl
+```
+
+## 🛠️ Technologies
+
+- **React 18** + TypeScript
+- **Vite** (build tool, port 3000)
+- **Tailwind CSS** + shadcn/ui (design system sémantique)
+- **@microsoft/power-apps SDK** (v0.3.21)
+- **React Router** (navigation SPA)
+- **TanStack Query** (data fetching)
+- **Lucide React** (icons)
+
+## 📋 Conformité Microsoft HelloWorld
+
+| Critère | Status |
+|---------|--------|
+| Pattern PowerProvider | ✅ Minimal, pas de context |
+| StrictMode | ✅ Activé dans main.tsx |
+| Port 3000 | ✅ Conforme HelloWorld |
+| base: "./" | ✅ Dans vite.config.ts |
+| Dataverse | ✅ Fonctionnel |
+| Pas de CSP | ✅ Aucune CSP |
+| SDK @microsoft/power-apps | ✅ v0.3.21 |
+
+## 📚 Documentation Complète
+
+- 📖 [Démarrage Rapide (5 min)](./QUICKSTART.md)
+- 📖 [Guide de Déploiement](./README_DEPLOYMENT.md)
+- 📖 [Migration HelloWorld](./HELLOWORLD_MIGRATION.md)
+- 📖 [Compliance Audit](./CODE_APPS_COMPLIANCE.md)
+
+## 🎮 Scripts npm
+
+```bash
+npm run dev         # Dev: Vite + PAC concurrent (port 3000)
+npm run dev:vite    # Dev: Vite seul
+npm run dev:pac     # Dev: PAC harness seul
+npm run build       # Build de production dans dist/
+npm run lint        # Linter ESLint
+npm run preview     # Preview du build local
+```
+
+## 🐛 Troubleshooting
+
+### ❌ App timeout dans Power Apps
+
+**Causes:**
+1. Build non effectué avant déploiement
+2. Problème dans PowerProvider.tsx
+
+**Solution:**
+```bash
 npm run build
 pac code push
 ```
 
-📖 **Guides Complets**:
-- [Quick Start Guide (EN)](./CODE_APPS_QUICKSTART.md) - Guide de démarrage rapide
-- [Compliance Review (EN)](./CODE_APPS_COMPLIANCE.md) - Revue de conformité et architecture
-- [Déploiement Power Apps (FR)](./POWERAPPS_DEPLOYMENT.md) - Guide détaillé de déploiement
+### ❌ Dataverse ne charge pas les produits
 
-## 📋 Fonctionnalités
+**Vérifier:**
+1. `power.config.json` a le bon `instanceUrl`
+2. Table `mbs_produits` existe et est accessible
+3. Permissions Dataverse correctes
+4. Console browser pour erreurs réseau
 
-### ✨ Conversions Multiples
-- **Bouteilles** ↔️ **Casiers** ↔️ **Hectolitres**
-- Calculs en temps réel avec précision
-- Support de 6 types de produits prédéfinis
-
-### 📊 Produits Disponibles
-1. Premium Lager 500ml (20 bouteilles/casier)
-2. Craft IPA 330ml (24 bouteilles/casier)
-3. Wheat Beer 500ml (20 bouteilles/casier)
-4. Pilsner 330ml (24 bouteilles/casier)
-5. Dark Ale 750ml (12 bouteilles/casier)
-6. Amber Lager 500ml (20 bouteilles/casier)
-
-### 💾 Historique Intelligent
-- Sauvegarde automatique des 10 dernières conversions
-- Restauration en un clic
-- Horodatage en français
-- Stockage local persistant
-
-### 🎨 Interface Moderne
-- Design responsive (mobile, tablette, desktop)
-- Animations fluides et professionnelles
-- Logo Brasco avec fond transparent
-- Thème personnalisé aux couleurs de la marque
-- Interface 100% en français
-
-## 🛠️ Technologies
-
-- **React 18.3** - Framework UI moderne
-- **TypeScript** - Typage statique
-- **Vite** - Build ultra-rapide
-- **Tailwind CSS** - Styling utility-first
-- **Shadcn UI** - Composants UI réutilisables
-- **React Router** - Navigation SPA
-- **Power Apps SDK** - Intégration Power Platform
-
-## 📁 Structure du Projet
-
-```
-b-convert/
-├── src/
-│   ├── assets/                  # Ressources (logo, images)
-│   ├── components/              # Composants React
-│   │   ├── ui/                 # Composants Shadcn UI
-│   │   ├── ConversionInput.tsx
-│   │   ├── ConversionResults.tsx
-│   │   ├── ConversionHistory.tsx
-│   │   └── ProductSelector.tsx
-│   ├── data/
-│   │   └── products.ts         # Base de données produits
-│   ├── lib/
-│   │   ├── utils.ts
-│   │   └── PowerProvider.tsx   # Intégration Power Apps
-│   ├── pages/
-│   │   ├── Index.tsx           # Page principale
-│   │   └── NotFound.tsx
-│   ├── types/
-│   │   └── product.ts
-│   └── App.tsx
-├── power.config.json            # Configuration Power Apps
-├── POWERAPPS_DEPLOYMENT.md      # Guide déploiement Power Apps
-├── README_POWERAPPS.md          # Documentation Power Apps
-└── .github/workflows/           # CI/CD GitHub Actions
-```
-
-## 🎮 Scripts Disponibles
+### ❌ Build errors
 
 ```bash
-npm run dev          # Serveur de développement (port 5173)
-npm run build        # Build production
-npm run build:dev    # Build développement
-npm run preview      # Prévisualise le build
-npm run lint         # Vérifie le code
-```
-
-## 🚢 Déploiement
-
-### Déploiement Web Standard
-
-L'application peut être déployée sur n'importe quelle plateforme web:
-- Vercel
-- Netlify
-- GitHub Pages
-- Azure Static Web Apps
-- **Lovable** - Simply open [Lovable](https://lovable.dev/projects/cccdac2f-2100-474f-8b91-4c064fdcf3f7) and click on Share -> Publish
-
-### Déploiement Power Apps
-
-Consultez [README_POWERAPPS.md](./README_POWERAPPS.md) et [POWERAPPS_DEPLOYMENT.md](./POWERAPPS_DEPLOYMENT.md) pour:
-- Configuration PAC CLI
-- Authentification Power Platform
-- Processus de build et push
-- CI/CD avec GitHub Actions
-- Gestion des environnements
-
-## 🔧 Configuration
-
-### power.config.json
-
-```json
-{
-  "appId": "f95ea74b-a9a2-4f0e-8e8a-c3f2abe4ed06",
-  "appDisplayName": "B-Convert",
-  "environmentId": "<votre-environment-id>",
-  "buildPath": "./dist",
-  "logoPath": "./src/assets/brasco-logo.png"
-}
-```
-
-## 📝 Utilisation
-
-1. **Sélectionner un produit** dans la liste déroulante
-2. **Entrer une valeur** et choisir l'unité (bouteilles, casiers, ou hectolitres)
-3. **Voir les résultats** instantanément dans les autres unités
-4. **Consulter l'historique** des conversions récentes
-5. **Restaurer** une conversion précédente en un clic
-
-## 🌐 Support Navigateurs
-
-- Chrome (recommandé)
-- Firefox
-- Safari
-- Edge
-- Power Apps Mobile
-
-## 📚 Documentation
-
-- [Guide Déploiement Power Apps](./POWERAPPS_DEPLOYMENT.md)
-- [Documentation Complète Power Apps](./README_POWERAPPS.md)
-- [Microsoft Power Apps Docs](https://learn.microsoft.com/en-us/power-apps/developer/code-apps/)
-
-## 👨‍💻 Développement
-
-### Éditer avec Lovable
-
-Visitez le [Lovable Project](https://lovable.dev/projects/cccdac2f-2100-474f-8b91-4c064fdcf3f7) et commencez à modifier par prompts AI.
-
-### Éditer avec VS Code
-
-```bash
-git clone <YOUR_GIT_URL>
-cd <YOUR_PROJECT_NAME>
-npm install
-code .
-npm run dev
-```
-
-### Éditer avec GitHub Codespaces
-
-- Cliquez sur "Code" > "Codespaces" > "New codespace"
-- Éditez directement dans le navigateur
-- Commit et push vos changements
-
-## 🐛 Dépannage
-
-### Problèmes de Build
-```bash
+# Clean install
 rm -rf node_modules dist
 npm install
 npm run build
 ```
 
-### Problèmes Power Apps
-```bash
-pac auth clear
-pac auth create --environment <id>
-```
+## 🌐 Support Navigateurs
 
-## 🤝 Contribution
+- ✅ Chrome (recommandé)
+- ✅ Firefox
+- ✅ Safari
+- ✅ Edge
+- ✅ Power Apps Mobile
 
-Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou une pull request.
+## 🔗 Ressources Officielles
 
-## 👤 Auteur
+- [Power Apps Code Apps Docs](https://learn.microsoft.com/en-us/power-apps/developer/code-apps/)
+- [HelloWorld Sample (GitHub)](https://github.com/microsoft/PowerAppsCodeApps/tree/main/samples/HelloWorld)
+- [PAC CLI Reference](https://learn.microsoft.com/en-us/power-platform/developer/cli/introduction)
+- [Dataverse Web API Docs](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview)
 
-**Bienvenu Sedin Massamba**
+## 👨‍💻 Développeur
 
-Application développée pour les Brasseries du Congo (Brasco)
+**Bienvenu Sedin Massamba**  
+Application développée pour **Brasco (Brasseries du Congo)**
 
 ## 📄 Licence
 
-© 2024 Bienvenu Sedin Massamba. Tous droits réservés.
+Propriétaire - Brasco © 2025
 
 ---
 
-**Projet Lovable**: https://lovable.dev/projects/cccdac2f-2100-474f-8b91-4c064fdcf3f7
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+**Pattern:** Microsoft PowerAppsCodeApps/HelloWorld  
+**Framework:** Power Apps Code Apps  
+**Version SDK:** @microsoft/power-apps ^0.3.21  
+**Build Tool:** Vite 6.x  
+**React:** 18.3
