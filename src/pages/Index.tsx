@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Product } from "@/types/product";
-import { useProducts } from "@/hooks/useProducts";
+import { products } from "@/data/products";
 import { ProductSelector } from "@/components/ProductSelector";
 import { ConversionInput, UnitType } from "@/components/ConversionInput";
 import { ConversionResults } from "@/components/ConversionResults";
@@ -11,8 +11,6 @@ import { toast } from "@/hooks/use-toast";
 import brascoLogo from "@/assets/brasco-logo.png";
 
 const Index = () => {
-  const { products, loading, error } = useProducts();
-
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [inputValue, setInputValue] = useState<string>("");
   const [inputUnit, setInputUnit] = useState<UnitType>("bottles");
@@ -60,11 +58,16 @@ const Index = () => {
     }
   };
 
+  // Memoize calculation results to prevent infinite re-renders
   const results = useMemo(() => {
-    if (!selectedProduct || !inputValue) return { bottles: 0, crates: 0, hectoliters: 0 };
+    if (!selectedProduct || !inputValue) {
+      return { bottles: 0, crates: 0, hectoliters: 0 };
+    }
 
     const value = parseFloat(inputValue);
-    if (isNaN(value)) return { bottles: 0, crates: 0, hectoliters: 0 };
+    if (isNaN(value)) {
+      return { bottles: 0, crates: 0, hectoliters: 0 };
+    }
 
     let bottles = 0;
     let crates = 0;
@@ -91,6 +94,7 @@ const Index = () => {
     return { bottles, crates, hectoliters };
   }, [selectedProduct, inputValue, inputUnit]);
 
+  // Save to history when a valid conversion is completed
   useEffect(() => {
     if (selectedProduct && inputValue) {
       const value = parseFloat(inputValue);
@@ -102,7 +106,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
-      {/* Background elements */}
+      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }}></div>
@@ -113,7 +117,11 @@ const Index = () => {
         {/* Header */}
         <div className="text-center space-y-6">
           <div className="flex flex-col items-center gap-6">
-            <img src={brascoLogo} alt="Brasco Logo" className="h-24 w-auto object-contain animate-scale-in" />
+            <img 
+              src={brascoLogo} 
+              alt="Brasco Logo" 
+              className="h-24 w-auto object-contain animate-scale-in"
+            />
             <div className="space-y-3">
               <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent animate-scale-in">
                 B-Convert
@@ -127,39 +135,11 @@ const Index = () => {
 
         {/* Main Conversion Card */}
         <Card className="p-8 glass-effect border-2 border-border/50 shadow-2xl space-y-8 rounded-3xl backdrop-blur-xl hover:border-primary/30 transition-all duration-500">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-muted-foreground">Chargement des produits depuis Dataverse…</p>
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="p-4 bg-destructive/10 rounded-2xl">
-                <Info className="w-12 h-12 text-destructive" />
-              </div>
-              <div className="text-center space-y-2">
-                <p className="text-destructive font-semibold">Erreur de connexion</p>
-                <p className="text-sm text-muted-foreground max-w-md">{error}</p>
-                <p className="text-xs text-muted-foreground">Vérifiez votre connexion Dataverse et les permissions sur la table mbs_produits</p>
-              </div>
-            </div>
-          ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <div className="p-4 bg-muted/50 rounded-2xl">
-                <Info className="w-12 h-12 text-muted-foreground" />
-              </div>
-              <div className="text-center space-y-2">
-                <p className="font-semibold text-foreground">Aucun produit trouvé</p>
-                <p className="text-sm text-muted-foreground">La table mbs_produits est vide. Ajoutez des produits dans Dataverse.</p>
-              </div>
-            </div>
-          ) : (
-            <ProductSelector
-              products={products}
-              selectedProduct={selectedProduct}
-              onProductChange={setSelectedProduct}
-            />
-          )}
+          <ProductSelector
+            products={products}
+            selectedProduct={selectedProduct}
+            onProductChange={setSelectedProduct}
+          />
 
           {selectedProduct && (
             <div className="p-6 bg-gradient-to-br from-primary/5 to-primary-light/5 rounded-2xl border-2 border-primary/20 animate-scale-in shadow-lg">
@@ -174,11 +154,15 @@ const Index = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
                       <span className="text-muted-foreground">Bouteilles par casier</span>
-                      <span className="font-bold text-foreground text-base">{selectedProduct.bottlesPerCrate}</span>
+                      <span className="font-bold text-foreground text-base">
+                        {selectedProduct.bottlesPerCrate}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center p-2 bg-background/50 rounded-lg">
                       <span className="text-muted-foreground">Hectolitres par casier</span>
-                      <span className="font-bold text-foreground text-base">{selectedProduct.hectolitersPerCrate} hl</span>
+                      <span className="font-bold text-foreground text-base">
+                        {selectedProduct.hectolitersPerCrate} hl
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -195,12 +179,14 @@ const Index = () => {
           />
 
           {selectedProduct && inputValue && parseFloat(inputValue) > 0 && (
-            <ConversionResults
-              bottles={results.bottles}
-              crates={results.crates}
-              hectoliters={results.hectoliters}
-              excludeUnit={inputUnit}
-            />
+            <div className="animate-scale-in">
+              <ConversionResults
+                bottles={results.bottles}
+                crates={results.crates}
+                hectoliters={results.hectoliters}
+                excludeUnit={inputUnit}
+              />
+            </div>
           )}
 
           {!selectedProduct && (
@@ -208,14 +194,16 @@ const Index = () => {
               <div className="inline-flex p-4 bg-muted/50 rounded-2xl">
                 <Sparkles className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">Sélectionnez un produit pour commencer la conversion</p>
+              <p className="text-muted-foreground">
+                Sélectionnez un produit pour commencer la conversion
+              </p>
             </div>
           )}
         </Card>
 
         <ConversionHistory history={history} onClear={clearHistory} onItemClick={restoreFromHistory} />
 
-        {/* Footer */}
+        {/* Footer Info */}
         <div className="text-center space-y-3">
           <p className="text-sm text-muted-foreground/80">
             Calculs de précision en temps réel pour la gestion des inventaires brassicoles

@@ -43,9 +43,6 @@ export const ConversionInput = ({
       </label>
       <div className="flex gap-3">
         <div className="flex-1 relative group/input">
-          <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wide">
-            Quantité
-          </label>
           <Input
             type="number"
             value={value}
@@ -60,38 +57,31 @@ export const ConversionInput = ({
             <div className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-pulse"></div>
           )}
         </div>
-        <div className="w-[180px]">
-          <label className="text-xs font-medium text-muted-foreground mb-1.5 block uppercase tracking-wide">
-            Unité
-          </label>
-          <Select value={unit} onValueChange={(value) => onUnitChange(value as UnitType)} disabled={disabled}>
-            <SelectTrigger className="h-14 bg-card border-2 border-border hover:border-primary transition-all duration-300 rounded-2xl shadow-sm hover:shadow-md font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover border-2 border-border rounded-2xl shadow-xl backdrop-blur-xl">
-              <SelectItem value="bottles" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-                <span className="font-medium">Bouteilles</span>
-              </SelectItem>
-              <SelectItem value="crates" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-                <span className="font-medium">Casiers</span>
-              </SelectItem>
-              <SelectItem value="hectoliters" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
-                <span className="font-medium">Hectolitres (hl)</span>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="pt-6">
-          <Button
-            onClick={handleSwapUnit}
-            disabled={disabled}
-            size="icon"
-            className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary-light hover:scale-105 transition-transform shadow-sm hover:shadow-md"
-            title="Changer d'unité"
-          >
-            <ArrowRightLeft className="h-5 w-5" />
-          </Button>
-        </div>
+        <Select value={unit} onValueChange={(value) => onUnitChange(value as UnitType)} disabled={disabled}>
+          <SelectTrigger className="w-[180px] h-14 bg-card border-2 border-border hover:border-primary transition-all duration-300 rounded-2xl shadow-sm hover:shadow-md font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-2 border-border rounded-2xl shadow-xl backdrop-blur-xl">
+            <SelectItem value="bottles" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
+              <span className="font-medium">Bouteilles</span>
+            </SelectItem>
+            <SelectItem value="crates" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
+              <span className="font-medium">Casiers</span>
+            </SelectItem>
+            <SelectItem value="hectoliters" className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 rounded-xl my-1 py-3 transition-all duration-200">
+              <span className="font-medium">Hectolitres (hl)</span>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          onClick={handleSwapUnit}
+          disabled={disabled}
+          size="icon"
+          className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary-light hover:scale-105 transition-transform shadow-sm hover:shadow-md"
+          title="Changer d'unité"
+        >
+          <ArrowRightLeft className="h-5 w-5" />
+        </Button>
       </div>
     </div>
   );
